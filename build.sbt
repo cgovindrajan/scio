@@ -87,6 +87,8 @@ val commonSettings = Sonatype.sonatypeSettings ++ assemblySettings ++ Seq(
   scalastyleSources in Compile ++= (unmanagedSourceDirectories in Test).value,
   testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
 
+  dependencyOverrides += "com.google.guava" % "guava" % guavaVersion, // FIXME: sbt-unidoc
+
   coverageExcludedPackages := Seq(
     "com\\.spotify\\.scio\\.examples\\..*",
     "com\\.spotify\\.scio\\.repl\\..*",
@@ -326,10 +328,11 @@ lazy val scioBigtable: Project = Project(
 ).settings(
   commonSettings ++ itSettings,
   description := "Scio add-on for Google Cloud Bigtable",
+  // FIXME: sbt-unidoc
+  dependencyOverrides += "com.google.cloud.bigtable" % "bigtable-client-core" % bigtableVersion,
   libraryDependencies ++= Seq(
     "com.google.auto.value" % "auto-value" % autoValueVersion % "provided",
-    "com.google.cloud.bigtable" % "bigtable-client-core" % bigtableVersion,
-    "org.apache.beam" % "beam-sdks-java-io-google-cloud-platform" % beamVersion,
+    "org.apache.beam" % "beam-sdks-java-io-google-cloud-platform" % beamVersion exclude("com.google.cloud.bigtable", "bigtable-client-core"),
     "org.scalatest" %% "scalatest" % scalatestVersion % "test"
   )
 ).dependsOn(
